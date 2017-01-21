@@ -1,0 +1,301 @@
+/* ----------------------------- */
+/* CSS Reset */
+/* ----------------------------- */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* ----------------------------- */
+/* Basic Setting */
+/* ----------------------------- */
+html, body { 
+	height: 100%;
+}
+
+body {
+	font-family: Microsoft JhengHei, Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	box-sizing: border-box;
+	color: #5f5f5f;
+}
+
+h1 {
+	font-size: 1.6rem;
+	font-weight: 600;
+}
+
+h2 {
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+
+.clearfix::after {
+	content:"";
+    display:block;
+    clear:both;
+}
+
+.btn {
+	font-size: 1.1rem;
+	outline: none;
+	cursor: pointer;
+	border: none;
+	color: #fff;
+	font-family: Microsoft JhengHei, Arial, Helvetica, sans-serif;
+}
+
+.btn:hover {
+	opacity: .85;
+}
+
+#map {
+	height: 100%;
+	position: relative;
+}
+
+/* ----------------------------- */
+/* Header */
+/* ----------------------------- */
+header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: #fff;
+	padding: 12px;
+	border-radius: 0 0 20px 0;
+	z-index: 99;
+	box-shadow: 2px 2px 8px 0px #b1afaf;
+}
+
+.title h1 {
+	float: left;
+}
+
+.btn.logout {
+	background-color: #36bad0;
+	padding: 6px 12px;
+	float: right;
+}
+
+.row {
+	line-height: 44px;
+}
+
+.col {
+	float: left;
+}
+
+.col.col-1 {
+	width: 76px;
+}
+
+.col.col-2 {
+	width: 200px;
+}
+
+#district {
+	margin-right: 20px;
+}
+
+#unitPriceRangeFrom, #unitPriceRangeEnd {
+	width: 60px;
+}
+
+#totalPriceRangeFrom, #totalPriceRangeEnd {
+	width: 122px;
+}
+
+.btn.search {
+	background-color: #fb7706;
+	padding: 6px 12px;
+	float: right;
+}
+
+/* ----------------------------- */
+/* Estate List */
+/* ----------------------------- */
+.estate-list {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 99;
+	background-color: rgba(255,255,255,0.8);
+	height: 100%;
+	overflow-y: auto
+}
+
+.estate-list li {
+	padding: 12px;
+	border-bottom: 3px dashed #bfbfbf;
+	width: 390px;
+}
+
+.estate-list li:last-child {
+	border-bottom: 0;
+}
+
+.estate-list li.hovered {
+	background-color: #ffd8b6;
+}
+
+.estate-detail {
+	float: left;
+}
+
+.estate-detail {
+	width: 260px;
+}
+
+.estate-detail + dl {
+	width: 105px;
+}
+
+.estate-detail dt {
+	float: left;
+	clear: left;
+	margin-top: 12px;
+}
+
+.estate-detail dd {
+	float: left;
+	margin-top: 12px;
+}
+
+.unitPrice {
+	color: #d80404;
+	font-weight: 600;
+}
+
+/* ----------------------------- */
+/* Autentication form */
+/* ----------------------------- */
+#overlay {
+	position: absolute;
+	z-index: 999;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background-color: rgba(102, 102, 102, 0.75);
+}
+
+.login_popup, .register_popup {
+	position: relative;
+	margin: 0 auto;
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: #fff;
+	width: 200px;
+	border-radius: 10px;
+	padding: 12px;
+}
+
+.login_popup input:not(.login), .register_popup input {
+	display: block;
+	margin: 12px auto;
+	line-height: 28px;
+	width: 200px;
+	border-width: 1px;
+}
+
+#overlay .btn {
+	display: block;
+	margin: 0 auto;
+	margin: 12px 0;
+	width: 200px;
+	text-align: center;
+	padding: 6px 0;
+}
+
+.btn.login, .btn.register {
+	background-color: #fb7706;
+}
+
+.btn.google {
+	background-color: #ea4335;
+}
+
+.btn.cancel {
+	background-color: #36bad0;
+}
+
+.login_popup a {
+	margin-bottom: 12px;
+	display: block;
+	text-align: center;
+}
+
+.register_popup {
+	display: none;
+}
+
+/* ----------------------------- */
+/* Message */
+/* ----------------------------- */
+.popupMsg {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 200px;
+	height: 80px;
+	border-radius: 20px;
+	z-index: 99;
+	background-color: #fff;
+	box-shadow: 0px 0px 12px 6px #b1afaf; 
+	font-weight: 600;
+}
+
+.popupMsg p {
+	text-align: center;
+	line-height: 80px;
+}
+
+form label.error{
+	color: #e4007f;
+	display: inline-block;
+	padding: 3px 3px;
+	font-size: 12px;
+	line-height: 1;
+	width: auto;
+}

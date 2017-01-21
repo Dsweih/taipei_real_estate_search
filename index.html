@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Real estates search of Taipei city">
+    <meta name="keyword" content="Real estates, search, Firebase, Google map">
+    <meta property="og:title" content="台北市實價登錄查詢">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <meta property="og:description" content="Real estates search of Taipei city">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="台北市實價登錄查詢"/>
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <title>台北市實價登錄查詢</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery.xml2json.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.6.5/firebase.js"></script>
+    <script src="js/script.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="title clearfix js--title">
+            <h1>台北市實價登錄查詢</h1>
+        </div>
+        <form action="">
+            <div class="row clearfix">
+                <div class="col col-1">
+                    <label for="district">行政區</label>
+                </div>
+                <div class="col col-2">
+                    <select name="district" id="district">
+                        <option value="">請選擇行政區</option>
+                        <option value="北投區">北投區</option>
+                        <option value="士林區">士林區</option>
+                        <option value="內湖區">內湖區</option>
+                        <option value="中山區">中山區</option>
+                        <option value="松山區">松山區</option>
+                        <option value="大同區">大同區</option>
+                        <option value="南港區">南港區</option>
+                        <option value="萬華區">萬華區</option>
+                        <option value="信義區">信義區</option>
+                        <option value="中正區">中正區</option>
+                        <option value="大安區">大安區</option>
+                        <option value="文山區">文山區</option>
+                    </select>
+                    <label for="park">車位</label>
+                    <input type="checkbox" id="park">
+                </div>
+                <div class="col">
+                    <label for="type">建物型態</label>
+                    <select name="type" id="type">
+                        <option value="">請選擇型態</option>
+                        <option value="公寓(5樓含以下無電梯)">公寓(5樓含以下無電梯)</option>
+                        <option value="透天厝">透天厝</option>
+                        <option value="店面(店鋪)">店面(店鋪)</option>
+                        <option value="辦公商業大樓">辦公商業大樓</option>
+                        <option value="住宅大樓(11層含以上有電梯)">住宅大樓(11層含以上有電梯)</option>
+                        <option value="華廈(10層含以下有電梯)">華廈(10層含以下有電梯)</option>
+                        <option value="套房(1房(1廳)1衛)">套房(1房(1廳)1衛)</option>
+                        <option value="工廠">工廠</option>
+                        <option value="廠辦">廠辦</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row clearfix">
+                <div class="col col-1">
+                    <label for="unitPriceRangeFrom">交易單價</label>
+                </div>
+                <div class="col col-2">
+                    <input type="text" id="unitPriceRangeFrom" name="unitPriceRangeFrom" maxlength="7"> ~ 
+                    <input type="text" id="unitPriceRangeEnd" name="unitPriceRangeEnd" maxlength="7">萬元
+                </div>
+                <div class="col">
+                    <label for="age">屋齡</label>
+                    <select name="age" id="age">
+                        <option value="">請選擇期間</option>
+                        <option value="0">1年以下</option>
+                        <option value="1">1-5年</option>
+                        <option value="5">5-10年</option>
+                        <option value="10">10-20年</option>
+                        <option value="20">20-30年</option>
+                        <option value="30">30年以上</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row clearfix">
+                <div class="col col-1">
+                    <label for="totalPriceRangeFrom">交易總價</label>
+                </div>
+                <input type="text" id="totalPriceRangeFrom" name="totalPriceRangeFrom" maxlength="15"> ~ 
+                <input type="text" id="totalPriceRangeEnd" name="totalPriceRangeEnd" maxlength="15">萬元
+                <button class="btn search" type="submit">搜尋</button>
+            </div>
+        </form>
+    </header>
+    <ul class="estate-list js--estate-list">
+        <!-- <li class="clearfix">
+            <h2>信義區莊敬路197巷1-30號</h2>
+            <dl class="estate-detail">
+                <dt>交易年月：</dt>
+                <dd class="soldDate"></dd>
+                <dt>總價：</dt>
+                <dd><span class="totalPrice"></span>萬元</dd>
+                <dt>單價：</dt>
+                <dd><span class="unitPrice"></span>萬/坪</dd>
+                <dt>型態：</dt>
+                <dd class="type"></dd>
+            </dl>
+            <dl class="estate-detail">
+                <dt>建坪：</dt>
+                <dd><span class="unit"></span>坪</dd>
+                <dt>屋齡：</dt>
+                <dd><span class="age"></span>年</dd>
+                <dt>車位：</dt>
+                <dd class="park"></dd>
+                <dt>樓高：</dt>
+                <dd class="totalFloors"></dd>
+            </dl>
+        </li> -->
+    </ul>
+    <section id="map"></section>
+    <section id="overlay" class="js--overlay">
+        <div class="login_popup js--login-popup">
+            <form action="">
+                <input type="email" name="login_email" class="required" placeholder="Email">
+                <input type="password" name="login_pwd" class="required" placeholder="密碼">
+                <a href="#" class="js--create-account">還沒有帳號?</a>
+                <input type="submit" class="btn login" value="登入">
+            </form>
+            <hr>
+            <button class="btn google js--btn-google">以 Google 帳號登入</button>
+        </div>
+        <div class="register_popup js--register-popup">
+            <form action="">
+                <input type="email" name="register_email" class="required" placeholder="Email">
+                <input type="password" name="register_pwd" id="register_pwd" minlength="6" placeholder="密碼長度大於6個字元">
+                <input type="password" name="register_pwd_again" placeholder="請輸入一樣的密碼">
+                <input type="submit" class="btn register" value="註冊">
+            </form>
+            <button class="btn cancel js--btn-cancel">取消</button>
+        </div>
+    </section>
+    <!-- template -->
+    <template id="template-estate">
+        <li class="clearfix">
+            <h2 class="address"></h2>
+            <dl class="estate-detail">
+                <dt>交易年月：</dt>
+                <dd class="soldDate"></dd>
+                <dt>總價：</dt>
+                <dd><span class="totalPrice"></span>萬元</dd>
+                <dt>單價：</dt>
+                <dd><span class="unitPrice"></span>萬/坪</dd>
+                <dt>型態：</dt>
+                <dd class="type"></dd>
+            </dl>
+            <dl class="estate-detail">
+                <dt>建坪：</dt>
+                <dd><span class="unit"></span>坪</dd>
+                <dt>屋齡：</dt>
+                <dd><span class="age"></span>年</dd>
+                <dt>車位：</dt>
+                <dd class="park"></dd>
+                <dt>樓高：</dt>
+                <dd class="totalFloors"></dd>
+            </dl>
+        </li>
+    </template>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBN6Tg0EOI4MTNVYKFPH75jMlaif5Bt19M&callback=initMap">
+    </script>
+</body>
+
+</html>
