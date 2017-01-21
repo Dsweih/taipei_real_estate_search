@@ -207,7 +207,7 @@ function initMap() {
 // Get data from API
 function getData() {
     // Get XML
-    $.get('../data/realPrice.xml', function(xml) {
+    $.get('../str/realPrice.xml', function(xml) {
         // Convert to JSON
         var json = $.xml2json(xml);
         data = json.Body.RPWeekDataResponse.RPWeekDataResult.Rows.Row;
