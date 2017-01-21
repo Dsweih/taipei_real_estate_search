@@ -492,13 +492,13 @@ function addMarker(address, position, unitPrice) {
     var $estateList = $('.js--estate-list');
     var icon = {
         anchor: new google.maps.Point(0, 32),
-        url: '../images/marker.png',
+        url: 'https://dsweih.github.io/taipei_real_estate_search/images/marker.png',
         scaledSize: new google.maps.Size(80, 32),
         labelOrigin: new google.maps.Point(40, 12)
     };
     var icon_mouseover = {
         anchor: new google.maps.Point(0, 32),
-        url: '../images/marker_hover.png',
+        url: 'https://dsweih.github.io/taipei_real_estate_search/images/marker_hover.png',
         scaledSize: new google.maps.Size(80, 32),
         labelOrigin: new google.maps.Point(40, 12)
     };
