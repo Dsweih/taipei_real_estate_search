@@ -207,7 +207,7 @@ function initMap() {
 // Get data from API
 function getData() {
     // Get XML
-    $.get('../str/realPrice.xml', function(xml) {
+    $.get('https://dsweih.github.io/taipei_real_estate_search/str/realPrice.xml', function(xml) {
         // Convert to JSON
         var json = $.xml2json(xml);
         data = json.Body.RPWeekDataResponse.RPWeekDataResult.Rows.Row;
