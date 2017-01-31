@@ -2,8 +2,6 @@
 var auth;
 // google map
 var map;
-// google map 地理位置轉換物件
-var geocoder;
 // 資料
 var data;
 // 延遲時間
@@ -14,6 +12,8 @@ var index;
 var addressLength;
 // Marker array
 var markers = [];
+// id of timeout
+var timeoutId;
 
 jQuery(document).ready(function($) {
     // Initialize firebase
@@ -51,20 +51,53 @@ function firebaseInit() {
 
 // 身分驗證事件綁定
 function authenticate() {
-    var $registerPopup = $('.js--register-popup');
-    var $loginPopup = $('.js--login-popup');
+    var $registerForm = $('.js--register-form');
+    var $loginForm = $('.js--login-form');
     var $overlay = $('.js--overlay');
+    var $createAccount = $('.js--create-account');
+    var $loginAccount = $('.js--login-account');
+    var $advancedRow = $('.row.advanced');
+    var $btnSearch = $('.btn.search');
+
+    // 創建帳號按鈕事件
+    $createAccount.on('click', function(event) {
+        event.preventDefault();
+        $overlay.show();
+        $loginForm.hide();
+        $registerForm.show();
+    });
+
+    // 登入帳號按鈕事件
+    $loginAccount.on('click', function(event) {
+        event.preventDefault();
+        $overlay.show();
+        $loginForm.show();
+    });
+
+    // 登出按紐事件
+    $('nav').on('click', '.js--logout', function(event) {
+        event.preventDefault();
+        // 將進階查詢欄位清空
+        $advancedRow.find('input:not([type="submit"])').val('');
+        $advancedRow.find('select').val('');
+        // 登出後重新搜尋
+        search();
+        // 登出
+        auth.signOut().then(function() {
+            // console.log("User sign out!");
+        }, function(error) {
+            // console.log("User sign out error!");
+        })
+    });
 
     // 註冊表單驗證
-    $registerPopup.children('form').validate({
+    $registerForm.validate({
         submitHandler: function(form) {
             var $form = $(form);
             var $email = $form.children('[name="register_email"]');
             var $pwd = $form.children('[name="register_pwd"]');
             auth.createUserWithEmailAndPassword($email.val(), $pwd.val()).then(function(result) {
                 $overlay.find('input:not([type="submit"])').val('');
-                // $email.val('');
-                // $pwd.val('');
             }).catch(function(error) {
                 // 處理錯誤區塊
                 var errorCode = error.code;
@@ -95,15 +128,13 @@ function authenticate() {
     });
 
     // 登入表單驗證
-    $loginPopup.children('form').validate({
+    $loginForm.validate({
         submitHandler: function(form) {
             var $form = $(form);
             var $email = $form.children('[name="login_email"]');
             var $pwd = $form.children('[name="login_pwd"]');
             auth.signInWithEmailAndPassword($email.val(), $pwd.val()).then(function(result) {
                 $overlay.find('input:not([type="submit"])').val('');
-                // $email.val('');
-                // $pwd.val('');
             }).catch(function(error) {
                 // 處理錯誤區塊
                 var errorCode = error.code;
@@ -122,15 +153,6 @@ function authenticate() {
         }
     });
 
-    // 登出按紐事件
-    $('.js--title').on('click', '.js--btn-logout', function(event) {
-        auth.signOut().then(function() {
-            // console.log("User sign out!");
-        }, function(error) {
-            // console.log("User sign out error!");
-        })
-    });
-
     // google帳號登入事件
     $('.js--btn-google').on('click', function(event) {
         var provider = new firebase.auth.GoogleAuthProvider();
@@ -146,31 +168,31 @@ function authenticate() {
         });
     });
 
+    // 取消按鈕事件
+    $('.js--btn-cancel').on('click', function(event) {
+        event.preventDefault();
+        $overlay.find('input:not([type="submit"])').val('');
+        $overlay.hide();
+        $loginForm.hide();
+        $registerForm.hide();
+    });
+
     // 登入狀態變換事件
     auth.onAuthStateChanged(function(user) {
         if (user) {
             $overlay.hide();
-            $('.js--title').append('<button class="btn logout js--btn-logout" type="button">登出</button>');
+            $createAccount.closest('li').hide();
+            $loginAccount.closest('li').hide();
+            $('nav ul').append('<li><a href="#" class="logout js--logout">登出</a></li>');
+            $advancedRow.show();
+            $btnSearch.appendTo('.row:last-child');
         } else {
-            $loginPopup.show();
-            $registerPopup.hide();
-            $overlay.show();
-            $('.js--btn-logout').remove();
+            $createAccount.closest('li').show();
+            $loginAccount.closest('li').show();
+            $('.js--logout').remove();
+            $advancedRow.hide();
+            $btnSearch.appendTo('.row:first-child');
         }
-    });
-
-    // 創建帳號按鈕事件
-    $('.js--create-account').on('click', function(event) {
-        event.preventDefault();
-        $loginPopup.hide();
-        $registerPopup.show();
-    });
-
-    // 取消按鈕事件
-    $('.js--btn-cancel').on('click', function(event) {
-        event.preventDefault();
-        $loginPopup.show();
-        $registerPopup.hide();
     });
 };
 
@@ -178,7 +200,7 @@ function authenticate() {
 function initMap() {
     var mapCanvas = document.getElementById('map');
     var mapOptions = {
-        center: { lat: 23.9037, lng: 121.460809 },
+        center: { lat: 25.0330, lng: 121.5654 },
         zoom: 13,
         mapTypeControl: false,
         scaleControl: true,
@@ -190,37 +212,45 @@ function initMap() {
     };
     map = new google.maps.Map(mapCanvas, mapOptions);
 
-    // 地理編碼 - 將地址轉為地理座標
-    geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address: '台北市' }, function(results, status) {
-        if (status === google.maps.GeocoderStatus.OK) {
-            // 設定'台北市'為地圖中心
-            map.setCenter(results[0].geometry.location);
-        } else {
-            console.log("Geocode was not successful for the following reason: " + status);
-        }
-    });
-
-    getData();
+    getData(search);
 }
 
 // Get data from API
-function getData() {
+function getData(search) {
     // Get XML
     $.get('https://dsweih.github.io/taipei_real_estate_search/str/realPrice.xml', function(xml) {
         // Convert to JSON
         var json = $.xml2json(xml);
         data = json.Body.RPWeekDataResponse.RPWeekDataResult.Rows.Row;
+        // Init search
+        search();
     });
 }
 
 // 搜尋結果
 function search() {
+    // 行政區經緯度
+    var districtPosition = {
+        '北投區': {lat: 25.1152, lng: 121.5150}, 
+        '士林區': {lat: 25.0950, lng: 121.5246}, 
+        '內湖區': {lat: 25.0689, lng: 121.5909}, 
+        '中山區': {lat: 25.0792, lng: 121.5427}, 
+        '松山區': {lat: 25.0542, lng: 121.5639}, 
+        '大同區': {lat: 25.0627, lng: 121.5113}, 
+        '南港區': {lat: 25.0312, lng: 121.6112}, 
+        '萬華區': {lat: 25.0263, lng: 121.4970}, 
+        '信義區': {lat: 25.0287, lng: 121.5770}, 
+        '中正區': {lat: 25.0421, lng: 121.5199}, 
+        '大安區': {lat: 25.0262, lng: 121.5427}, 
+        '文山區': {lat: 24.9929, lng: 121.5713}
+    };
+
+    // Clear timeout
+    clearTimeout(timeoutId);
     // Clear markers on the map
     clearMarkers();
 
     var returnedData;
-    var center;
     // 行政區
     var districtList = document.getElementById("district");
     var district = districtList.options[districtList.selectedIndex].value;
@@ -299,18 +329,10 @@ function search() {
     index = 0;
 
     if (returnedData.length > 0) {
-        // 地理編碼 - 將地址轉為地理座標
-        geocoder.geocode({ address: '台北市' + district }, function(results, status) {
-            if (status === google.maps.GeocoderStatus.OK) {
-                center = results[0].geometry.location;
-                // 設定搜尋之行政區為地圖中心
-                map.setCenter(center);
-                // Set zoom to 14
-                map.setZoom(14);
-            } else {
-                console.log("Geocode was not successful for the following reason: " + status);
-            }
-        });
+        // 設定搜尋之行政區為地圖中心
+        map.setCenter(districtPosition[district]);
+        // Set zoom to 14
+        map.setZoom(14);
         getGeocode(returnedData, index);
     } else {
         $('body').append('<div class="popupMsg"><p>找不到相關資料</p></div>');
@@ -335,10 +357,6 @@ function validate() {
             );
         },
         rules: {
-            // 行政區
-            district: {
-                required: true
-            },
             // 交易單價
             unitPriceRangeFrom: {
                 number: true,
@@ -367,61 +385,6 @@ function validate() {
             }
         }
     });
-
-    // 行政區
-    // var districtList = $('#district');
-    // if (!districtList.find('option:selected').val()) {
-    //     districtList.css({ backgroundColor: '#ff4f4f' });
-    //     result = false;
-    // }
-
-    // 交易單價
-    // var unitPriceRangeFrom = $('#unitPriceRangeFrom');
-    // var unitPriceRangeEnd = $('#unitPriceRangeEnd');
-
-    // if (unitPriceRangeFrom.val() !== '' || unitPriceRangeEnd.val() !== '') {
-    //     if (parseFloat(unitPriceRangeFrom.val()) > parseFloat(unitPriceRangeEnd.val())) {
-    //         unitPriceRangeFrom.css({ backgroundColor: '#ff4f4f' });
-    //         unitPriceRangeEnd.css({ backgroundColor: '#ff4f4f' });
-    //         result = false;
-    //     } else {
-    //         unitPriceRangeFrom.css({ backgroundColor: '#fff' });
-    //         unitPriceRangeEnd.css({ backgroundColor: '#fff' });
-    //     }
-    //     if (isNaN(unitPriceRangeFrom.val()) || unitPriceRangeFrom.val() === '') {
-    //         console.log(isNaN(unitPriceRangeFrom.val()));
-    //         unitPriceRangeFrom.css({ backgroundColor: '#ff4f4f' });
-    //         result = false;
-    //     }
-    //     if (isNaN(unitPriceRangeEnd.val()) || unitPriceRangeEnd.val() === '') {
-    //         unitPriceRangeEnd.css({ backgroundColor: '#ff4f4f' });
-    //         result = false;
-    //     }
-    // }
-
-    // 交易總價
-    // var totalPriceRangeFrom = $('#totalPriceRangeFrom');
-    // var totalPriceRangeEnd = $('#totalPriceRangeEnd');
-    // if (totalPriceRangeFrom.val() !== '' || totalPriceRangeEnd.val()) {
-    //     if (parseFloat(totalPriceRangeFrom.val()) > parseFloat(totalPriceRangeEnd.val())) {
-    //         console.log(totalPriceRangeFrom.val());
-    //         console.log(totalPriceRangeEnd.val());
-    //         totalPriceRangeFrom.css({ backgroundColor: '#ff4f4f' });
-    //         totalPriceRangeEnd.css({ backgroundColor: '#ff4f4f' });
-    //         result = false;
-    //     } else {
-    //         totalPriceRangeFrom.css({ backgroundColor: '#fff' });
-    //         totalPriceRangeEnd.css({ backgroundColor: '#fff' });
-    //     }
-    //     if (isNaN(totalPriceRangeFrom.val()) || totalPriceRangeFrom.val() === '') {
-    //         totalPriceRangeFrom.css({ backgroundColor: '#ff4f4f' });
-    //         result = false;
-    //     }
-    //     if (isNaN(totalPriceRangeEnd.val()) || totalPriceRangeEnd.val() === '') {
-    //         totalPriceRangeEnd.css({ backgroundColor: '#ff4f4f' });
-    //         result = false;
-    //     }
-    // }
 }
 
 // 將地址轉為地理座標
@@ -448,13 +411,14 @@ function getGeocode(data, index) {
         age: age // 屋齡
     };
     // 地理編碼 - 將地址轉為地理座標
+    var geocoder = new google.maps.Geocoder();
     geocoder.geocode({ address: search }, function(results, status) {
         if (status === google.maps.GeocoderStatus.OK) {
             var position = results[0].geometry.location;
             // Add markers to the map
-            addMarker(search, position, unitPrice);
+            var marker = addMarker(search, position, unitPrice);
             // Create detail list of markers
-            createList(obj);
+            createList(obj, marker);
         } else {
             // 如 request 太快，出現 OVER_QUERY_LIMIT，則重新 decode 並 delay
             if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
@@ -466,9 +430,10 @@ function getGeocode(data, index) {
         }
         index++;
         if (index < addressLength) {
-            setTimeout(function() {
+            timeoutId = setTimeout(function() {
                 getGeocode(data, index);
             }, delay);
+
         }
     });
 }
@@ -493,15 +458,10 @@ function addMarker(address, position, unitPrice) {
     var icon = {
         anchor: new google.maps.Point(0, 32),
         url: 'https://dsweih.github.io/taipei_real_estate_search/images/marker.png',
-        scaledSize: new google.maps.Size(80, 32),
-        labelOrigin: new google.maps.Point(40, 12)
+        scaledSize: new google.maps.Size(96, 32),
+        labelOrigin: new google.maps.Point(48, 12)
     };
-    var icon_mouseover = {
-        anchor: new google.maps.Point(0, 32),
-        url: 'https://dsweih.github.io/taipei_real_estate_search/images/marker_hover.png',
-        scaledSize: new google.maps.Size(80, 32),
-        labelOrigin: new google.maps.Point(40, 12)
-    };
+    var icon_mouseover = $.extend({}, icon, {url: 'https://dsweih.github.io/taipei_real_estate_search/images/marker_hover.png'});
 
     var marker = new google.maps.Marker({
         map: map,
@@ -512,8 +472,10 @@ function addMarker(address, position, unitPrice) {
             fontFamily: 'Microsoft JhengHei, Arial, Helvetica, sans-serif',
             color: '#fff'
         },
-        title: address
+        title: address, 
+        id: address
     });
+
     // Marker mouseover event
     marker.addListener('mouseover', function() {
         marker.setIcon(icon_mouseover);
@@ -538,10 +500,12 @@ function addMarker(address, position, unitPrice) {
         }, 1000);
     });
     markers.push(marker);
+
+    return marker;
 }
 
 // Create detail list of markers
-function createList(obj) {
+function createList(obj, marker) {
     var clone = document.getElementById('template-estate').content.cloneNode(true);
     clone.querySelector('.address').innerHTML = obj.address;
     clone.querySelector('.unitPrice').innerHTML = obj.unitPrice === '0' ? '--' : obj.unitPrice;
@@ -552,6 +516,16 @@ function createList(obj) {
     clone.querySelector('.park').innerHTML = obj.park === '' ? '無' : '有';
     clone.querySelector('.unit').innerHTML = obj.unit === '0' ? '--' : obj.unit;
     clone.querySelector('.age').innerHTML = obj.age === 0 ? '--' : obj.age;
+
+    // Bind mouseover event
+    clone.querySelector('li').addEventListener('mouseover', function() {
+        google.maps.event.trigger(marker,'mouseover');
+    });
+    // Bind mouseout event
+    clone.querySelector('li').addEventListener('mouseout', function() {
+        google.maps.event.trigger(marker,'mouseout');
+    });
+
     var estateList = document.querySelector('.js--estate-list');
     estateList.appendChild(clone);
 }
@@ -564,7 +538,6 @@ function clearMarkers() {
     markers = [];
     $('.js--estate-list li').remove();
 }
-
 
 // var cityDistrict = {
 //     '基隆市': ['仁愛區', '信義區', '中正區', '中山區', '安樂區', '暖暖區', '七堵區'],

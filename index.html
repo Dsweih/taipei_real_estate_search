@@ -23,8 +23,18 @@
 
 <body>
     <header>
-        <div class="title clearfix js--title">
-            <h1>台北市實價登錄查詢</h1>
+        <div class="clearfix">
+            <h1 class="title">台北市實價登錄查詢</h1>
+            <nav>
+                <ul class="clearfix">
+                    <li>
+                        <a href="#" class="create-account js--create-account">註冊</a>
+                    </li>
+                    <li>
+                        <a href="#" class="login-account js--login-account">登入</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
         <form action="">
             <div class="row clearfix">
@@ -33,7 +43,6 @@
                 </div>
                 <div class="col col-2">
                     <select name="district" id="district">
-                        <option value="">請選擇行政區</option>
                         <option value="北投區">北投區</option>
                         <option value="士林區">士林區</option>
                         <option value="內湖區">內湖區</option>
@@ -50,7 +59,7 @@
                     <label for="park">車位</label>
                     <input type="checkbox" id="park">
                 </div>
-                <div class="col">
+                <div class="col col-3">
                     <label for="type">建物型態</label>
                     <select name="type" id="type">
                         <option value="">請選擇型態</option>
@@ -65,8 +74,9 @@
                         <option value="廠辦">廠辦</option>
                     </select>
                 </div>
+                <button class="btn search" type="submit">搜尋</button>
             </div>
-            <div class="row clearfix">
+            <div class="row advanced clearfix">
                 <div class="col col-1">
                     <label for="unitPriceRangeFrom">交易單價</label>
                 </div>
@@ -74,7 +84,7 @@
                     <input type="text" id="unitPriceRangeFrom" name="unitPriceRangeFrom" maxlength="7"> ~ 
                     <input type="text" id="unitPriceRangeEnd" name="unitPriceRangeEnd" maxlength="7">萬元
                 </div>
-                <div class="col">
+                <div class="col col-3">
                     <label for="age">屋齡</label>
                     <select name="age" id="age">
                         <option value="">請選擇期間</option>
@@ -87,62 +97,61 @@
                     </select>
                 </div>
             </div>
-            <div class="row clearfix">
+            <div class="row advanced clearfix">
                 <div class="col col-1">
                     <label for="totalPriceRangeFrom">交易總價</label>
                 </div>
-                <input type="text" id="totalPriceRangeFrom" name="totalPriceRangeFrom" maxlength="15"> ~ 
-                <input type="text" id="totalPriceRangeEnd" name="totalPriceRangeEnd" maxlength="15">萬元
-                <button class="btn search" type="submit">搜尋</button>
+                <div class="col col-4">
+                    <input type="text" id="totalPriceRangeFrom" name="totalPriceRangeFrom" maxlength="15"> ~ 
+                    <input type="text" id="totalPriceRangeEnd" name="totalPriceRangeEnd" maxlength="15">萬元
+                </div>
             </div>
         </form>
     </header>
-    <ul class="estate-list js--estate-list">
-        <!-- <li class="clearfix">
-            <h2>信義區莊敬路197巷1-30號</h2>
-            <dl class="estate-detail">
-                <dt>交易年月：</dt>
-                <dd class="soldDate"></dd>
-                <dt>總價：</dt>
-                <dd><span class="totalPrice"></span>萬元</dd>
-                <dt>單價：</dt>
-                <dd><span class="unitPrice"></span>萬/坪</dd>
-                <dt>型態：</dt>
-                <dd class="type"></dd>
-            </dl>
-            <dl class="estate-detail">
-                <dt>建坪：</dt>
-                <dd><span class="unit"></span>坪</dd>
-                <dt>屋齡：</dt>
-                <dd><span class="age"></span>年</dd>
-                <dt>車位：</dt>
-                <dd class="park"></dd>
-                <dt>樓高：</dt>
-                <dd class="totalFloors"></dd>
-            </dl>
-        </li> -->
-    </ul>
+    <section id="main">
+        <ul class="estate-list js--estate-list">
+            <!-- <li class="clearfix">
+                <h2>信義區莊敬路197巷1-30號</h2>
+                <dl class="estate-detail">
+                    <dt>交易年月：</dt>
+                    <dd class="soldDate"></dd>
+                    <dt>總價：</dt>
+                    <dd><span class="totalPrice"></span>萬元</dd>
+                    <dt>單價：</dt>
+                    <dd><span class="unitPrice"></span>萬/坪</dd>
+                    <dt>型態：</dt>
+                    <dd class="type"></dd>
+                </dl>
+                <dl class="estate-detail">
+                    <dt>建坪：</dt>
+                    <dd><span class="unit"></span>坪</dd>
+                    <dt>屋齡：</dt>
+                    <dd><span class="age"></span>年</dd>
+                    <dt>車位：</dt>
+                    <dd class="park"></dd>
+                    <dt>樓高：</dt>
+                    <dd class="totalFloors"></dd>
+                </dl>
+            </li> -->
+        </ul>
+    </section>
     <section id="map"></section>
     <section id="overlay" class="js--overlay">
-        <div class="login_popup js--login-popup">
-            <form action="">
+            <form action="" class="login-form js--login-form">
                 <input type="email" name="login_email" class="required" placeholder="Email">
                 <input type="password" name="login_pwd" class="required" placeholder="密碼">
-                <a href="#" class="js--create-account">還沒有帳號?</a>
                 <input type="submit" class="btn login" value="登入">
+                <button class="btn cancel js--btn-cancel">取消</button>
+                <hr>
+                <button class="btn google js--btn-google">以 Google 帳號登入</button>
             </form>
-            <hr>
-            <button class="btn google js--btn-google">以 Google 帳號登入</button>
-        </div>
-        <div class="register_popup js--register-popup">
-            <form action="">
+            <form action="" class="register-form js--register-form">
                 <input type="email" name="register_email" class="required" placeholder="Email">
                 <input type="password" name="register_pwd" id="register_pwd" minlength="6" placeholder="密碼長度大於6個字元">
                 <input type="password" name="register_pwd_again" placeholder="請輸入一樣的密碼">
                 <input type="submit" class="btn register" value="註冊">
+                <button class="btn cancel js--btn-cancel">取消</button>
             </form>
-            <button class="btn cancel js--btn-cancel">取消</button>
-        </div>
     </section>
     <!-- template -->
     <template id="template-estate">
